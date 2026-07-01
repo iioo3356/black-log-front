@@ -1,12 +1,13 @@
-import clsx from "clsx";
 import dayjs, { Dayjs } from "dayjs";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useMemo, useState } from "react";
 
-export const Calendar = ({
+import { CalendarDate, type DiaryPreview } from "./CalendarDate";
+
+export const MonthCalendar = ({
   diaryList,
 }: {
-  diaryList?: { [key: string]: string[] | null };
+  diaryList?: { [key: string]: DiaryPreview[] | null };
 }) => {
   const currentDay = dayjs().set("date", 1);
 
@@ -89,54 +90,11 @@ export const Calendar = ({
             className="flex w-full border-t border-stone-400 last:border-b"
           >
             {week.map((day, dIdx) => (
-              <div
+              <CalendarDate
                 key={dIdx}
-                className={clsx(
-                  "w-full h-[120px] flex flex-col  border-r border-stone-300 first:border-l text-center",
-                  // "hover:bg-stone-200/50",
-                )}
-              >
-                <div
-                  className={clsx(
-                    "text-[12px]",
-                    day.month() === selectedBasics.month()
-                      ? "font-bold"
-                      : "font-light",
-                    day.day() === 0
-                      ? "text-red-600"
-                      : day.day() === 6
-                        ? "text-blue-600"
-                        : "text-black",
-                  )}
-                >
-                  {day.date()}
-                </div>
-                <button
-                  className={clsx(
-                    "h-full cursor-pointer hover:bg-stone-200/50",
-                    "flex flex-col gap-[2px]",
-                  )}
-                >
-                  {diaryList?.[day.format("YYYY-MM-DD")]
-                    ?.slice(0, 4)
-                    ?.map((diary, index) => (
-                      <div
-                        className={clsx(
-                          index % 2 === 0 ? "bg-stone-200" : "bg-stone-300",
-                          "text-[13px] pl-[2px] text-left line-clamp-1",
-                        )}
-                      >
-                        {diary}
-                      </div>
-                    ))}
-                  {(diaryList?.[day.format("YYYY-MM-DD")] || []).length > 4 && (
-                    <div className="text-[12px] text-right">
-                      +
-                      {(diaryList?.[day.format("YYYY-MM-DD")] || []).length - 4}
-                    </div>
-                  )}
-                </button>
-              </div>
+                day={day}
+                diaryList={diaryList?.[day.format("YYYY-MM-DD")]}
+              />
             ))}
           </div>
         ))}
