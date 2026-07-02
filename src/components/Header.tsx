@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import clsx from "clsx";
 import { ChevronLeft } from "lucide-react";
 import type { ReactNode } from "react";
@@ -10,6 +10,16 @@ interface HeaderProps {
 }
 
 export const Header = ({ title, prefix, suffix }: HeaderProps) => {
+  const navigate = useNavigate();
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      window.history.back();
+      return;
+    }
+
+    navigate({ to: "/" });
+  };
+
   return (
     <div
       className={clsx(
@@ -20,9 +30,9 @@ export const Header = ({ title, prefix, suffix }: HeaderProps) => {
     >
       <div className="w-[24px]">
         {prefix === "back" ? (
-          <Link to="..">
+          <button onClick={handleBack}>
             <ChevronLeft />
-          </Link>
+          </button>
         ) : (
           prefix
         )}

@@ -1,21 +1,27 @@
 import dayjs, { Dayjs } from "dayjs";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import { CalendarDate, type DiaryPreview } from "./CalendarDate";
 
 export const MonthCalendar = ({
   diaryList,
+  selectedMonth,
+  openDate,
+  onSelectedMonthChange,
+  onOpenDateChange,
 }: {
   diaryList?: { [key: string]: DiaryPreview[] | null };
+  selectedMonth: Dayjs;
+  openDate?: string;
+  onSelectedMonthChange: (month: Dayjs) => void;
+  onOpenDateChange: (date?: string) => void;
 }) => {
   const currentDay = dayjs().set("date", 1);
 
-  const [selectedBasics, setSelectedBasics] = useState(currentDay);
-
   const calendarWeeks = useMemo(() => {
-    const startOfMonth = selectedBasics.startOf("month"); // 선택된 달의 첫번째 날
-    const endOfMonth = selectedBasics.endOf("month"); // 선택된 달의 마지막 날
+    const startOfMonth = selectedMonth.startOf("month"); // 선택된 달의 첫번째 날
+    const endOfMonth = selectedMonth.endOf("month"); // 선택된 달의 마지막 날
 
     const calendarStart = startOfMonth.startOf("week"); // 첫번째 날이 있는 주의 일요일
     const calendarEnd = endOfMonth.endOf("week"); // 마지막 날이 있는 주의 토요일
@@ -35,18 +41,18 @@ export const MonthCalendar = ({
     }
 
     return weeks;
-  }, [selectedBasics]);
+  }, [selectedMonth]);
 
   const handleOnPrev = () => {
-    setSelectedBasics((prev) => prev.add(-1, "month"));
+    onSelectedMonthChange(selectedMonth.add(-1, "month"));
   };
 
   const handleOnGoToday = () => {
-    setSelectedBasics(currentDay);
+    onSelectedMonthChange(currentDay);
   };
 
   const handleOnNext = () => {
-    setSelectedBasics((prev) => prev.add(1, "month"));
+    onSelectedMonthChange(selectedMonth.add(1, "month"));
   };
 
   // TODO: 전체 월 선택 버튼
@@ -61,7 +67,7 @@ export const MonthCalendar = ({
             <ChevronLeft />
           </button>
           <div className="font-bold text-[20px] w-[100px] text-center">
-            {selectedBasics.format("YY년 M월")}
+            {selectedMonth.format("YY년 M월")}
           </div>
           <button onClick={handleOnNext}>
             <ChevronRight />
@@ -94,6 +100,12 @@ export const MonthCalendar = ({
                 key={dIdx}
                 day={day}
                 diaryList={diaryList?.[day.format("YYYY-MM-DD")]}
+                isOpen={openDate === day.format("YYYY-MM-DD")}
+                onOpenChange={(nextIsOpen) =>
+                  onOpenDateChange(
+                    nextIsOpen ? day.format("YYYY-MM-DD") : undefined,
+                  )
+                }
               />
             ))}
           </div>

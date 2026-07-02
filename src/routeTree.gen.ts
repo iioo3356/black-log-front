@@ -15,6 +15,7 @@ import { Route as AuthSignInRouteImport } from './routes/auth/sign-in'
 import { Route as AuthInitRouteImport } from './routes/auth/init'
 import { Route as AuthGoogleRouteImport } from './routes/auth/google'
 import { Route as appWriteRouteImport } from './routes/(app)/write'
+import { Route as appDiaryDiaryIdRouteImport } from './routes/(app)/diary.$diaryId'
 
 const appRouteRoute = appRouteRouteImport.update({
   id: '/(app)',
@@ -45,6 +46,11 @@ const appWriteRoute = appWriteRouteImport.update({
   path: '/write',
   getParentRoute: () => appRouteRoute,
 } as any)
+const appDiaryDiaryIdRoute = appDiaryDiaryIdRouteImport.update({
+  id: '/diary/$diaryId',
+  path: '/diary/$diaryId',
+  getParentRoute: () => appRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/write': typeof appWriteRoute
@@ -52,6 +58,7 @@ export interface FileRoutesByFullPath {
   '/auth/init': typeof AuthInitRoute
   '/auth/sign-in': typeof AuthSignInRoute
   '/': typeof appIndexRoute
+  '/diary/$diaryId': typeof appDiaryDiaryIdRoute
 }
 export interface FileRoutesByTo {
   '/write': typeof appWriteRoute
@@ -59,6 +66,7 @@ export interface FileRoutesByTo {
   '/auth/init': typeof AuthInitRoute
   '/auth/sign-in': typeof AuthSignInRoute
   '/': typeof appIndexRoute
+  '/diary/$diaryId': typeof appDiaryDiaryIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -68,12 +76,25 @@ export interface FileRoutesById {
   '/auth/init': typeof AuthInitRoute
   '/auth/sign-in': typeof AuthSignInRoute
   '/(app)/': typeof appIndexRoute
+  '/(app)/diary/$diaryId': typeof appDiaryDiaryIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/write' | '/auth/google' | '/auth/init' | '/auth/sign-in' | '/'
+  fullPaths:
+    | '/write'
+    | '/auth/google'
+    | '/auth/init'
+    | '/auth/sign-in'
+    | '/'
+    | '/diary/$diaryId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/write' | '/auth/google' | '/auth/init' | '/auth/sign-in' | '/'
+  to:
+    | '/write'
+    | '/auth/google'
+    | '/auth/init'
+    | '/auth/sign-in'
+    | '/'
+    | '/diary/$diaryId'
   id:
     | '__root__'
     | '/(app)'
@@ -82,6 +103,7 @@ export interface FileRouteTypes {
     | '/auth/init'
     | '/auth/sign-in'
     | '/(app)/'
+    | '/(app)/diary/$diaryId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -135,17 +157,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appWriteRouteImport
       parentRoute: typeof appRouteRoute
     }
+    '/(app)/diary/$diaryId': {
+      id: '/(app)/diary/$diaryId'
+      path: '/diary/$diaryId'
+      fullPath: '/diary/$diaryId'
+      preLoaderRoute: typeof appDiaryDiaryIdRouteImport
+      parentRoute: typeof appRouteRoute
+    }
   }
 }
 
 interface appRouteRouteChildren {
   appWriteRoute: typeof appWriteRoute
   appIndexRoute: typeof appIndexRoute
+  appDiaryDiaryIdRoute: typeof appDiaryDiaryIdRoute
 }
 
 const appRouteRouteChildren: appRouteRouteChildren = {
   appWriteRoute: appWriteRoute,
   appIndexRoute: appIndexRoute,
+  appDiaryDiaryIdRoute: appDiaryDiaryIdRoute,
 }
 
 const appRouteRouteWithChildren = appRouteRoute._addFileChildren(

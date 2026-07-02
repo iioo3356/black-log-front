@@ -1,14 +1,42 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import clsx from "clsx";
+import dayjs from "dayjs";
 import { Pencil, Search } from "lucide-react";
 
 import { Button, Header, MonthCalendar } from "@/components";
 
+import { diaryListByDate } from "../../mocks/diaries";
+
+type CalendarSearch = {
+  month?: string;
+  openDate?: string;
+};
+
 export const Route = createFileRoute("/(app)/")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    month: typeof search.month === "string" ? search.month : undefined,
+    openDate:
+      typeof search.openDate === "string" ? search.openDate : undefined,
+  }),
   component: RouteComponent,
 });
 
 function RouteComponent() {
+  const navigate = useNavigate({ from: Route.fullPath });
+  const { month, openDate } = Route.useSearch();
+  const selectedMonth =
+    month && /^\d{4}-\d{2}$/.test(month) ? dayjs(`${month}-01`) : dayjs();
+
+  const updateCalendarSearch = (next: CalendarSearch) => {
+    navigate({
+      search: (prev: CalendarSearch) => ({
+        ...prev,
+        ...next,
+      }),
+      replace: true,
+    });
+  };
+
   return (
     <div>
       <Header
@@ -22,21 +50,23 @@ function RouteComponent() {
       />
       <div className="relative pt-[16px] pb-[60px]">
         <MonthCalendar
-          diaryList={{
-            "2026-07-23": [
-              { title: "개발 중 졸리다", date: "2026-07-23 09:12:00" },
-              { title: "오짬 맛잇당", date: "2026-07-23 12:30:00" },
-              {
-                title: "날짜 누르면 모달 나오게 해야징",
-                date: "2026-07-23 15:00:00",
-              },
-              { title: "4개까지만", date: "2026-07-23 18:20:00" },
-              { title: "이건 숫자로 보이지롱", date: "2026-07-23 22:45:00" },
-            ],
-            "2026-01-20": [
-              { title: "색 선택 기능 필요한가", date: "2026-01-20 10:00:00" },
-            ],
-          }}
+          diaryList={diaryListByDate}
+          selectedMonth={selectedMonth}
+          openDate={openDate}
+          onSelectedMonthChange={(nextMonth) =>
+            updateCalendarSearch({
+              month: nextMonth.format("YYYY-MM"),
+              openDate: undefined,
+            })
+          }
+          onOpenDateChange={(nextOpenDate) =>
+            updateCalendarSearch({
+              month: nextOpenDate
+                ? dayjs(nextOpenDate).format("YYYY-MM")
+                : selectedMonth.format("YYYY-MM"),
+              openDate: nextOpenDate,
+            })
+          }
         />
         <Link to="/write">
           <Button className={clsx(`fixed bottom-0 w-full max-w-lg`)}>
